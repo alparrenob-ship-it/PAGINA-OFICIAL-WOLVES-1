@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wolves - App de Bienestar Estudiantil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-900 overflow-x-hidden relative">
+
+    <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900/90 backdrop-blur-md border border-cyan-500/50 text-white px-5 py-4 rounded-xl shadow-[0_0_25px_rgba(6,182,212,0.3)] max-w-sm flex items-start gap-3 transition-all duration-300 hidden">
+        <i data-lucide="sparkles" class="text-cyan-400 w-5 h-5 shrink-0 animate-pulse mt-0.5"></i>
+        <div>
+            <p class="font-semibold text-sm text-cyan-300">Aviso del Sistema Wolves</p>
+            <p id="toast-text" class="text-xs text-slate-300 mt-0.5"></p>
+        </div>
+    </div>
+
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none opacity-40"></div>
+
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute top-1/3 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <nav class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+                        <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 2L4 7v5c0 4.5 3 8.5 8 10 5-1.5 8-5.5 8-10V7l-8-5z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6l3 4.5H9L12 6z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 11l2 3h-4l2-3z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-black text-2xl tracking-wider text-white">WOLVES</span>
+                        <p class="text-[9px] text-cyan-400 font-mono tracking-widest uppercase">Eight Academy</p>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="#problema" class="text-slate-300 hover:text-cyan-400 px-4 py-2 rounded-lg text-sm font-medium transition-all">Problema</a>
+                    <a href="#sistema" class="text-slate-300 hover:text-cyan-400 px-4 py-2 rounded-lg text-sm font-medium transition-all">Sistema</a>
+                    <a href="#moodcheck" class="text-slate-300 hover:text-cyan-400 px-4 py-2 rounded-lg text-sm font-medium transition-all">Mood Check</a>
+                    <a href="#autorregulacion" class="text-slate-300 hover:text-cyan-400 px-4 py-2 rounded-lg text-sm font-medium transition-all">Herramientas</a>
+                    <a href="#blockchain" class="text-slate-300 hover:text-cyan-400 px-4 py-2 rounded-lg text-sm font-medium transition-all">Transparencia</a>
+                    <a href="#wallet" class="text-slate-300 hover:text-cyan-400 px-4 py-2 rounded-lg text-sm font-medium transition-all">Wallet</a>
+                    <a href="#equipo" class="text-slate-300 hover:text-cyan-400 px-4 py-2 rounded-lg text-sm font-medium transition-all">Manada</a>
+                </div>
+
+                <div class="hidden lg:flex items-center gap-3">
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 flex items-center gap-3 shadow-[inset_0_1px_3px_rgba(255,255,255,0.05)]">
+                        <i data-lucide="wallet" class="text-cyan-400 w-5 h-5"></i>
+                        <div>
+                            <div class="text-[10px] text-slate-400 font-mono leading-none">MI WALLET</div>
+                            <div class="text-sm font-bold text-white font-mono"><span class="coin-display">350</span> EC <span class="text-slate-500 font-normal text-xs">($<span id="usd-display">3.50</span>)</span></div>
+                        </div>
+                    </div>
+                    <a href="#moodcheck" class="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-semibold px-4 py-2.5 rounded-xl text-sm transition-all duration-300 shadow-[0_4px_15px_rgba(6,182,212,0.3)]">
+                        Demo Check
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative py-20 lg:py-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-7 space-y-8 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs font-semibold uppercase tracking-wider">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i> Start-up de Impacto Social • Hackathon Winner
+                    </div>
+                    <h1 class="text-4xl sm:text-6xl font-black tracking-tight leading-tight text-white">
+                        WOLVES <br />
+                        <span class="bg-gradient-to-r from-blue-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
+                            Bienestar que protege la manada
+                        </span>
+                    </h1>
+                    <p class="text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                        Aplicación digital para fortalecer la salud emocional, la empatía y la autorregulación en <span className="text-cyan-400 font-semibold">Eight Academy</span>. Diseñada por estudiantes para construir una red de apoyo inteligente.
+                    </p>
+                    <div class="p-4 bg-slate-900/60 border border-slate-800/80 rounded-2xl max-w-md mx-auto lg:mx-0 flex items-center gap-3 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur">
+                        <div class="p-3 bg-cyan-500/10 rounded-xl">
+                            <i data-lucide="activity" class="w-6 h-6 text-cyan-400 animate-pulse"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-400 uppercase tracking-wider font-mono">Nuestra filosofía</p>
+                            <p class="text-sm font-bold text-white">"La tecnología detecta. La comunidad acompaña."</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                        <a href="#moodcheck" class="w-full sm:w-auto text-center bg-gradient-to-r from-blue-600 via-cyan-500 to-cyan-400 hover:from-blue-500 hover:to-cyan-300 text-slate-950 font-black px-8 py-4 rounded-xl shadow-[0_0_30px_rgba(6,182,212,0.4)] transition-all duration-300 flex items-center justify-center gap-2 transform hover:-translate-y-1">
+                            Iniciar Mood Check <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#sistema" class="w-full sm:w-auto text-center bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500 font-bold px-8 py-4 rounded-xl transition-all">
+                            Conocer el Proyecto
+                        </a>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 relative flex justify-center">
+                    <div class="relative w-80 h-80 sm:w-96 sm:h-96">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-full opacity-20 blur-[60px]"></div>
+                        <div class="absolute inset-0 bg-slate-900/70 border-2 border-cyan-500/30 rounded-3xl p-6 flex flex-col justify-between shadow-[0_0_50px_rgba(6,182,212,0.15)] backdrop-blur">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-mono text-cyan-400">WOLVES // ACTIVE NODE</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                            </div>
+                            <div class="w-full flex justify-center my-4">
+                                <svg class="w-48 h-48 text-cyan-400 filter drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <polygon points="50,15 25,35 25,55 35,65 50,85 65,65 75,55 75,35" />
+                                    <line x1="50" y1="15" x2="50" y2="85" />
+                                    <line x1="25" y1="35" x2="75" y2="35" />
+                                    <line x1="25" y1="55" x2="75" y2="55" />
+                                    <polygon points="50,55 42,42 58,42" />
+                                    <polygon points="35,35 45,30 40,40" />
+                                    <polygon points="65,35 55,30 60,40" />
+                                    <path d="M 15,20 L 25,35 M 85,20 L 75,35" />
+                                </svg>
+                            </div>
+                            <div class="bg-slate-950/90 border border-slate-800 rounded-2xl p-4 space-y-2">
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-slate-400">Salud de la Manada</span>
+                                    <span class="text-emerald-400 font-bold">Estable (96%)</span>
+                                </div>
+                                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-[96%]"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="problema" class="py-24 border-t border-slate-900 bg-slate-950">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <span class="text-cyan-400 font-mono text-sm uppercase tracking-wider">El Reto de Hoy</span>
+                <h2 class="text-3xl sm:text-5xl font-black text-white">¿Por qué nace Wolves?</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-slate-900/40 border border-slate-800/80 p-8 rounded-2xl space-y-4">
+                    <div class="w-12 h-12 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400"><i data-lucide="shield-alert"></i></div>
+                    <h3 class="text-xl font-bold text-white">Estrés Académico</h3>
+                    <p class="text-sm text-slate-400">Sobrecarga de tareas y evaluaciones constantes que generan ansiedad silenciosa.</p>
+                </div>
+                <div class="bg-slate-900/40 border border-slate-800/80 p-8 rounded-2xl space-y-4">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400"><i data-lucide="compass"></i></div>
+                    <h3 class="text-xl font-bold text-white">Identificación</h3>
+                    <p class="text-sm text-slate-400">Dificultad de los estudiantes para reconocer y etiquetar correctamente sus emociones.</p>
+                </div>
+                <div class="bg-slate-900/40 border border-slate-800/80 p-8 rounded-2xl space-y-4">
+                    <div class="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-400"><i data-lucide="activity"></i></div>
+                    <h3 class="text-xl font-bold text-white">Impulsividad</h3>
+                    <p class="text-sm text-slate-400">Falta de herramientas de autorregulación rápidas antes de reaccionar impulsivamente.</p>
+                </div>
+                <div class="bg-slate-900/40 border border-slate-800/80 p-8 rounded-2xl space-y-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400"><i data-lucide="users"></i></div>
+                    <h3 class="text-xl font-bold text-white">Aislamiento</h3>
+                    <p class="text-sm text-slate-400">Sistemas de consejería tradicionales que intervienen demasiado tarde.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="sistema" class="py-24 bg-slate-900/20 border-t border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <span class="text-cyan-400 font-mono text-sm uppercase tracking-wider">Módulos Integrados</span>
+                <h2 class="text-3xl sm:text-5xl font-black text-white">La Solución: El Sistema Wolves</h2>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6">
+                    <div class="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400"><i data-lucide="activity"></i></div>
+                    <h3 class="text-2xl font-bold text-white">Mood Check Inteligente</h3>
+                    <p class="text-slate-400 text-sm">Registro de emociones por colores. Si hay racha negativa consecutiva, activa apoyo preventivo.</p>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6">
+                    <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400"><i data-lucide="users"></i></div>
+                    <h3 class="text-2xl font-bold text-white">Citas Seguras</h3>
+                    <p class="text-slate-400 text-sm">Agenda digital directa con el departamento de psicología, totalmente privada y sin burocracia.</p>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400"><i data-lucide="wallet"></i></div>
+                    <h3 class="text-2xl font-bold text-white">Gamificación Incorruptible</h3>
+                    <p class="text-slate-400 text-sm">Recompensas por buenos hábitos mediante Eight-Coins registradas en una simulación de Ledger Blockchain.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="moodcheck" class="py-24 bg-gradient-to-b from-slate-950 to-slate-900 border-t border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <span class="text-cyan-400 font-mono text-sm uppercase tracking-wider">Demostración Interactiva</span>
+                <h2 class="text-3xl sm:text-5xl font-black text-white">Simulador de Registro Diario</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-3xl p-8 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-6">¿Cómo se siente hoy tu manada?</h3>
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
+                            <button onclick="selectMood('alegre')" class="mood-btn p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center hover:border-emerald-500">
+                                <div class="text-3xl mb-2">🐺🟢</div><span class="text-xs font-semibold block text-slate-300">Alegre</span>
+                            </button>
+                            <button onclick="selectMood('calmado')" class="mood-btn p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center hover:border-cyan-500">
+                                <div class="text-3xl mb-2">🐺🔵</div><span class="text-xs font-semibold block text-slate-300">Calmado</span>
+                            </button>
+                            <button onclick="selectMood('triste')" class="mood-btn p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center hover:border-blue-500">
+                                <div class="text-3xl mb-2">🐺🟣</div><span class="text-xs font-semibold block text-slate-300">Triste</span>
+                            </button>
+                            <button onclick="selectMood('estresado')" class="mood-btn p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center hover:border-amber-500">
+                                <div class="text-3xl mb-2">🐺🟡</div><span class="text-xs font-semibold block text-slate-300">Estresado</span>
+                            </button>
+                            <button onclick="selectMood('frustrado')" class="mood-btn p-4 rounded-2xl bg-slate-950 border border-slate-800 text-center hover:border-rose-500">
+                                <div class="text-3xl mb-2">🐺🔴</div><span class="text-xs font-semibold block text-slate-300">Frustrado</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <p class="text-xs text-slate-400 font-mono mb-3 uppercase">Historial de Constancia</p>
+                        <div class="grid grid-cols-7 gap-2" id="weeks-tracker">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-3xl p-8 flex flex-col justify-between">
+                    <div id="monitor-placeholder" class="py-12 text-center space-y-3">
+                        <i data-lucide="activity" class="w-12 h-12 text-slate-700 mx-auto animate-bounce"></i>
+                        <p class="text-sm text-slate-400">Selecciona un estado en la izquierda para encender el monitor analítico.</p>
+                    </div>
+
+                    <div id="monitor-content" class="space-y-6 hidden">
+                        <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+                            <p class="text-xs text-slate-500 font-mono">ÚLTIMO REGISTRO EMOCIONAL</p>
+                            <div class="flex items-center gap-3 mt-2">
+                                <div class="text-3xl">🐺</div>
+                                <div>
+                                    <p id="monitor-mood-title" class="text-lg font-bold text-white uppercase"></p>
+                                    <p class="text-xs text-slate-400">Sincronizado de forma segura</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="alert-card" class="p-4 rounded-2xl border transition-all duration-300">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i id="alert-icon" data-lucide="shield-check" class="w-5 h-5"></i>
+                                <span id="alert-title" class="text-sm font-bold"></span>
+                            </div>
+                            <p id="alert-text" class="text-xs text-slate-400"></p>
+                            <div id="alert-action-btn" class="mt-3 hidden">
+                                <button onclick="triggerNotification('📅 Solicitud enviada. El psicólogo de Eight Academy agendará tu hora libre.')" class="bg-rose-500 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg">
+                                    Reservar Cita Médica Privada
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-slate-800">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-xs text-slate-500 block font-mono">SALDO TOTAL</span>
+                                <span class="text-xl font-extrabold text-white font-mono"><span class="coin-display">350</span> EC</span>
+                            </div>
+                            <span class="text-[10px] bg-cyan-500/10 text-cyan-400 py-1 px-2.5 rounded-full font-mono">Cifrado Ledger</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="autorregulacion" class="py-24 bg-slate-950 border-t border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <span class="text-cyan-400 font-mono text-sm uppercase tracking-wider">Módulos de Alivio</span>
+                <h2 class="text-3xl sm:text-5xl font-black text-white">Herramientas Clínicas</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400"><i data-lucide="activity"></i></div>
+                        <h3 class="text-lg font-bold text-white">1. Respira Conmigo</h3>
+                        <p class="text-xs text-slate-400">Guía de control de respiración diafragmática (Método 4-4-4) para desactivar picos de ansiedad escolar.</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+                        <span class="text-xs text-cyan-400 font-mono">+15 EC</span>
+                        <button onclick="openModal('respiracion')" class="bg-slate-950 hover:bg-cyan-500 border border-slate-800 hover:text-slate-950 text-xs font-bold py-2 px-4 rounded-xl transition-all">Probar</button>
+                    </div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400"><i data-lucide="volume-2"></i></div>
+                        <h3 class="text-lg font-bold text-white">2. Paisajes Auditivos</h3>
+                        <p class="text-xs text-slate-400">Audio integrado de ondas binaurales de 432Hz para aislar el ruido exterior y enfocar la cognición.</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+                        <span class="text-xs text-cyan-400 font-mono">+15 EC</span>
+                        <button onclick="openModal('musica')" class="bg-slate-950 hover:bg-cyan-500 border border-slate-800 hover:text-slate-950 text-xs font-bold py-2 px-4 rounded-xl transition-all">Probar</button>
+                    </div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400"><i data-lucide="book-open"></i></div>
+                        <h3 class="text-lg font-bold text-white">3. Diario de Gratitud</h3>
+                        <p class="text-xs text-slate-400">Escritura expresiva guiada para reentrenar el enfoque mental hacia aspectos positivos cotidianos.</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+                        <span class="text-xs text-cyan-400 font-mono">+15 EC</span>
+                        <button onclick="openModal('diario')" class="bg-slate-950 hover:bg-cyan-500 border border-slate-800 hover:text-slate-950 text-xs font-bold py-2 px-4 rounded-xl transition-all">Probar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="blockchain" class="py-24 bg-slate-950 border-t border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <span class="text-cyan-400 font-mono text-sm uppercase tracking-wider">Libro Contable Descentralizado</span>
+                <h2 class="text-3xl sm:text-5xl font-black text-white">Ledger de Transparencia</h2>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl h-fit">
+                    <span class="text-xs text-indigo-400 font-mono block mb-4">FLUJO DEL MODELO FINTECH</span>
+                    <div class="space-y-2 text-xs font-mono">
+                        <div class="p-3 bg-slate-950 rounded-lg border border-slate-800">1. Acción Saludable Detectada</div>
+                        <div class="p-3 bg-slate-950 rounded-lg border border-slate-800">2. Emisión Automática Token EC</div>
+                        <div class="p-3 bg-gradient-to-r from-cyan-950 to-slate-950 rounded-lg border border-cyan-500/30 text-cyan-300">3. Bloque Inmutable Añadido</div>
+                    </div>
+                </div>
+                <div class="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-4">
+                    <h3 class="text-lg font-bold text-white">Bloques de Recompensa Verificados</h3>
+                    <div class="space-y-3" id="blockchain-list">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="retos" class="py-24 bg-slate-950 border-t border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <span class="text-cyan-400 font-mono text-sm uppercase tracking-wider">Acción Comunitaria</span>
+                <h2 class="text-3xl sm:text-5xl font-black text-white">Retos Colectivos Activos</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="retos-container">
+                </div>
+        </div>
+    </section>
+
+    <section id="wolf-ai" class="py-24 bg-slate-900/20 border-t border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <span class="text-cyan-400 font-mono text-sm uppercase tracking-wider">Asistente de Crisis 24/7</span>
+                <h2 class="text-3xl sm:text-5xl font-black text-white">Wolf AI Chatbot</h2>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-4 bg-slate-900 border border-slate-800 p-8 rounded-3xl flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs text-cyan-400 font-mono uppercase">NLP Engine</span>
+                        <h3 class="text-xl font-bold text-white mt-2 mb-4">Filtrado de Sentimiento</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">Nuestra Inteligencia Artificial analiza palabras clave como "triste", "estresado" o "solo" para sugerir redireccionamiento clínico inmediato con los tutores.</p>
+                    </div>
+                    <p class="text-[10px] text-slate-600 font-mono mt-4">Toda conversación viaja encriptada bajo estándares estrictos.</p>
+                </div>
+
+                <div class="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-3xl h-[400px] flex flex-col justify-between overflow-hidden">
+                    <div class="p-4 bg-slate-950 border-b border-slate-800 flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <div class="text-xl">🐺</div>
+                            <div>
+                                <span class="text-xs font-bold block text-white">Wolf AI Consejero</span>
+                                <span class="text-[9px] text-slate-500 font-mono">Nodo Virtual Eight Academy</span>
+                            </div>
+                        </div>
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    </div>
+
+                    <div id="chat-box" class="p-4 overflow-y-auto flex-1 space-y-3 text-xs">
+                        <div class="flex justify-start">
+                            <div class="max-w-[80%] p-3 bg-slate-950 border border-slate-800 text-slate-300 rounded-2xl rounded-tl-none">
+                                ¡Hola, lobo! Soy Wolf AI. ¿Cómo se siente hoy tu manada? Cuéntame o selecciona uno de nuestros atajos si estás pasando por estrés, ansiedad o tristeza.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-slate-950 border-t border-slate-800 flex gap-2">
+                        <input id="chat-input" type="text" placeholder="Escribe algo aquí (ej: 'estoy estresado')..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-cyan-500" onkeydown="if(event.key === 'Enter') sendChatMessage()">
+                        <button onclick="sendChatMessage()" class="p-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl transition-all">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="wallet" class="py-24 bg-slate-950 border-t border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <span class="text-cyan-400 font-mono text-sm uppercase tracking-wider">Tienda de Canje Físico</span>
+                <h2 class="text-3xl sm:text-5xl font-black text-white">Canjea tus Recompensas</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-full h-40 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-center text-cyan-400 font-bold font-mono">KIT AZUL</div>
+                        <h4 class="text-lg font-bold text-white">Kit de Emociones Básico</h4>
+                        <p class="text-xs text-slate-400">Guías físicas impresas de respiración autónoma y cuadernillo reflexivo básico.</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+                        <div><span class="text-[9px] text-slate-500 block font-mono">COSTO</span><span class="text-md font-bold font-mono text-white">300 EC</span></div>
+                        <button onclick="redeemKit('Kit de Emociones Básico', 300)" class="bg-cyan-500 text-slate-950 text-xs font-black px-4 py-2 rounded-xl">Canjear</button>
+                    </div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-full h-40 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-center text-cyan-300 font-bold font-mono">KIT PLUS</div>
+                        <h4 class="text-lg font-bold text-white">Kit de Emociones Plus</h4>
+                        <p class="text-xs text-slate-400">Incluye pelota antiestrés táctil, bitácora de metas semanales y pegatinas de tracker emocional.</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+                        <div><span class="text-[9px] text-slate-500 block font-mono">COSTO</span><span class="text-md font-bold font-mono text-white">500 EC</span></div>
+                        <button onclick="redeemKit('Kit de Emociones Plus', 500)" class="bg-cyan-500 text-slate-950 text-xs font-black px-4 py-2 rounded-xl">Canjear</button>
+                    </div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-full h-40 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-center text-indigo-400 font-bold font-mono">MANADA VIP</div>
+                        <h4 class="text-lg font-bold text-white">Kit Manada Wolves Premium</h4>
+                        <p class="text-xs text-slate-400">Termo oficial de metal, hoodie térmico del equipo Wolves y diario de cuero.</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+                        <div><span class="text-[9px] text-slate-500 block font-mono">COSTO</span><span class="text-md font-bold font-mono text-white">800 EC</span></div>
+                        <button onclick="redeemKit('Kit Manada Wolves Premium', 800)" class="bg-cyan-500 text-slate-950 text-xs font-black px-4 py-2 rounded-xl">Canjear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur px-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-6 relative shadow-[0_0_50px_rgba(6,182,212,0.2)]">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i data-lucide="x"></i></button>
+            
+            <div id="modal-content-respiracion" class="hidden text-center space-y-6">
+                <h4 class="text-2xl font-black text-white">Respira Conmigo</h4>
+                <div class="flex justify-center items-center h-40">
+                    <div id="breathing-circle" class="w-28 h-28 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-black text-xs transition-all duration-1000 shadow-[0_0_30px_rgba(6,182,212,0.4)]">Inhala</div>
+                </div>
+                <button onclick="completeActivity(15, 'Sesión de Respiración')" class="w-full bg-cyan-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs">Completar y ganar 15 EC</button>
+            </div>
+
+            <div id="modal-content-musica" class="hidden text-center space-y-6">
+                <h4 class="text-2xl font-black text-white">Frecuencia de Concentración</h4>
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                    <p class="text-sm font-bold text-white">Sinfonía del Bosque Estelar</p>
+                    <p class="text-[10px] text-slate-500 font-mono">Modulación Binaural Activa • 432Hz</p>
+                </div>
+                <button onclick="completeActivity(15, 'Terapia de Ondas de Sonido')" class="w-full bg-cyan-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs">Completar y ganar 15 EC</button>
+            </div>
+
+            <div id="modal-content-diario" class="hidden space-y-4">
+                <h4 class="text-xl font-bold text-white text-center">Escribe algo por lo que estés agradecido</h4>
+                <textarea id="diario-text" placeholder="Hoy agradezco por..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-cyan-500" rows="4"></textarea>
+                <button onclick="saveGratitudeDiary()" class="w-full bg-cyan-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs">Guardar Entrada (+15 EC)</button>
+            </div>
+        </div>
+    </div>
+
+    <section id="equipo" class="py-24 bg-slate-950 border-t border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="p-6 bg-slate-900 border border-slate-800 rounded-3xl max-w-3xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 text-center text-xs">
+                <div><span class="text-slate-500 block font-mono">LÍDER DE PROYECTO</span><span class="font-bold text-white text-sm">Maite Bravo</span></div>
+                <div><span class="text-slate-500 block font-mono">SECRETARIO</span><span class="font-bold text-white text-sm">Camilo Isava</span></div>
+                <div><span class="text-slate-500 block font-mono">DISEÑADOR UI</span><span class="font-bold text-white text-sm">Leonardo Benítez</span></div>
+                <div><span class="text-slate-500 block font-mono">VOCERO</span><span class="font-bold text-white text-sm">Hazel Yanez</span></div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // --- ESTADO GLOBAL SIMULADO ---
+        let currentCoins = 350;
+        let selectedMoodHistory = ['calmado', 'alegre', 'calmado'];
+        let breathingTimer = null;
+
+        const challengesData = [
+            { id: 1, text: "Ayuda a un compañero durante la jornada", coins: 20, completed: false },
+            { id: 2, text: "Escribe un mensaje positivo a alguien", coins: 20, completed: false },
+            { id: 3, text: "Practica la escucha activa con tu manada", coins: 20, completed: false }
+        ];
+
+        const initialBlockchain = [
+            { action: 'Registro Emocional', value: '+10 EC', hash: '0x8f2a...7c91', time: 'Hace 2 horas' },
+            { action: 'Reto Convivencia Completado', value: '+20 EC', hash: '0xb4e1...3a0f', time: 'Ayer' },
+            { action: 'Pausa Activa Completada', value: '+15 EC', hash: '0x9d3c...2d14', time: 'Ayer' }
+        ];
+
+        // --- INICIALIZACIÓN ---
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            renderTracker();
+            renderBlockchain();
+            renderChallenges();
+        });
+
+        // --- SISTEMA DE TOAST NOTIFICACIONES ---
+        function triggerNotification(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => { toast.classList.add('hidden'); }, 4000);
+        }
+
+        // --- ACTUALIZADOR DE BILLETERA ---
+        function updateCoins(amount, actionLabel) {
+            currentCoins += amount;
+            document.querySelectorAll('.coin-display').forEach(el => el.innerText = currentCoins);
+            document.getElementById('usd-display').innerText = (currentCoins * 0.01).toFixed(2);
+            
+            // Inyectar en Blockchain
+            const randomHash = '0x' + Math.floor(Math.random()*16777215).toString(16) + '...' + Math.floor(Math.random()*4095).toString(16);
+            initialBlockchain.unshift({
+                action: actionLabel,
+                value: (amount > 0 ? '+' : '') + amount + ' EC',
+                hash: randomHash,
+                time: 'Ahora mismo'
+            });
+            renderBlockchain();
+        }
+
+        // --- TRACKER SEMANAL & MOOD ---
+        function renderTracker() {
+            const days = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'];
+            const container = document.getElementById('weeks-tracker');
+            container.innerHTML = '';
+            
+            days.forEach((day, index) => {
+                const mood = selectedMoodHistory[index] || null;
+                let bg = 'bg-slate-950 border-slate-800';
+                let dot = 'bg-slate-700';
+                if(mood === 'alegre') { bg = 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400'; dot='bg-emerald-400'; }
+                if(mood === 'calmado') { bg = 'bg-cyan-500/20 border-cyan-500/40 text-cyan-400'; dot='bg-cyan-400'; }
+                if(mood === 'triste') { bg = 'bg-blue-500/20 border-blue-500/40 text-blue-400'; dot='bg-blue-400'; }
+                if(mood === 'estresado') { bg = 'bg-amber-500/20 border-amber-500/40 text-amber-400'; dot='bg-amber-400'; }
+                if(mood === 'frustrado') { bg = 'bg-rose-500/20 border-rose-500/40 text-rose-400'; dot='bg-rose-400'; }
+
+                container.innerHTML += `
+                    <div class="p-2 rounded-xl border text-center ${bg} flex flex-col items-center justify-between h-16">
+                        <span class="text-[9px] text-slate-500 font-bold font-mono">${day}</span>
+                        <div class="w-1.5 h-1.5 rounded-full ${dot}"></div>
+                        <span class="text-[8px] font-mono truncate capitalize max-w-full">${mood ? mood : '•'}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function selectMood(mood) {
+            triggerNotification(`¡Ganaste +10 Eight-Coins por registrar tu estado: Lobo ${mood.toUpperCase()}!`);
+            updateCoins(10, `Registro Diario: ${mood}`);
+            
+            selectedMoodHistory.push(mood);
+            if(selectedMoodHistory.length > 7) selectedMoodHistory.shift();
+            renderTracker();
+
+            // Encender el monitor analítico en tiempo real
+            document.getElementById('monitor-placeholder').classList.add('hidden');
+            const content = document.getElementById('monitor-content');
+            content.classList.remove('hidden');
+            
+            document.getElementById('monitor-mood-title').innerText = mood;
+
+            // Análisis de Algoritmo de Alerta (3 estados negativos consecutivos)
+            const negativeList = ['triste', 'estresado', 'frustrado'];
+            let consecutiveNegatives = 0;
+            for(let i = selectedMoodHistory.length - 1; i >= 0; i--) {
+                if(negativeList.includes(selectedMoodHistory[i])) {
+                    consecutiveNegatives++;
+                } else {
+                    break;
+                }
+            }
+
+            const alertCard = document.getElementById('alert-card');
+            const alertTitle = document.getElementById('alert-title');
+            const alertText = document.getElementById('alert-text');
+            const alertAction = document.getElementById('alert-action-btn');
+            const alertIcon = document.getElementById('alert-icon');
+
+            if(consecutiveNegatives >= 3) {
+                alertCard.className = "p-4 rounded-2xl border transition-all duration-300 bg-rose-950/20 border-rose-500/50 text-rose-300 shadow-[0_0_20px_rgba(239,68,68,0.1)]";
+                alertTitle.innerText = "¡Alerta de Bienestar Activada!";
+                alertText.innerText = "Detectamos estados recurrentes de fatiga o frustración en tu historial. Tu tutor en Eight Academy está disponible para escucharte.";
+                alertAction.classList.remove('hidden');
+                alertIcon.setAttribute('data-lucide', 'shield-alert');
+            } else {
+                alertCard.className = "p-4 rounded-2xl border transition-all duration-300 bg-slate-950 border-slate-800 text-slate-300";
+                alertTitle.innerText = "Estado de Salud Estable";
+                alertText.innerText = "Tus registros indican estabilidad en el ciclo de la manada. Sigue registrando a diario.";
+                alertAction.classList.add('hidden');
+                alertIcon.setAttribute('data-lucide', 'shield-check');
+            }
+            lucide.createIcons();
+        }
+
+        // --- RENDERIZAR RECONOCIMIENTO BLOCKCHAIN ---
+        function renderBlockchain() {
+            const list = document.getElementById('blockchain-list');
+            list.innerHTML = '';
+            initialBlockchain.forEach(block => {
+                list.innerHTML += `
+                    <div class="p-4 bg-slate-950 border border-slate-800 rounded-2xl flex justify-between items-center text-xs">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-cyan-500/10 text-cyan-400 rounded-lg flex items-center justify-center">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-white">${block.action}</p>
+                                <p class="text-[9px] text-slate-500 font-mono">Hash: ${block.hash}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-mono font-bold text-emerald-400">${block.value}</span>
+                            <p class="text-[9px] text-slate-500">${block.time}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        // --- RENDERIZAR RETOS COOPERATIVOS ---
+        function renderChallenges() {
+            const container = document.getElementById('retos-container');
+            container.innerHTML = '';
+            challengesData.forEach(r => {
+                container.innerHTML += `
+                    <div class="p-6 rounded-2xl border ${r.completed ? 'bg-slate-900/50 border-emerald-500/30' : 'bg-slate-900 border-slate-800'} flex flex-col justify-between h-44">
+                        <div class="space-y-2">
+                            <span class="text-[9px] text-slate-500 font-mono uppercase">COMUNIDAD</span>
+                            <p class="text-xs font-bold text-white">${r.text}</p>
+                        </div>
+                        <div class="pt-3 border-t border-slate-800 flex justify-between items-center">
+                            <span class="text-xs text-emerald-400 font-mono font-bold">+${r.coins} EC</span>
+                            <button onclick="completeChallenge(${r.id}, ${r.coins}, '${r.text}')" ${r.completed ? 'disabled' : ''} class="text-[10px] font-bold py-1.5 px-3 rounded-xl ${r.completed ? 'bg-slate-950 text-slate-600 cursor-not-allowed' : 'bg-cyan-500 text-slate-950'}">
+                                ${r.completed ? 'Verificado' : 'Completar'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function completeChallenge(id, reward, text) {
+            const ch = challengesData.find(item => item.id === id);
+            if(ch) {
+                ch.completed = true;
+                updateCoins(reward, `Reto cumplido: ${text.substring(0,15)}...`);
+                triggerNotification(`¡Ganaste +${reward} Eight-Coins por tu impacto social!`);
+                renderChallenges();
+            }
+        }
+
+        // --- MODALES INTERACTIVOS Y ACCIONES DE PAUSA ---
+        function openModal(type) {
+            document.getElementById('modal-container').classList.remove('hidden');
+            document.getElementById('modal-content-respiracion').classList.add('hidden');
+            document.getElementById('modal-content-musica').classList.add('hidden');
+            document.getElementById('modal-content-diario').classList.add('hidden');
+
+            if(type === 'respiracion') {
+                document.getElementById('modal-content-respiracion').classList.remove('hidden');
+                startBreathingAnimation();
+            } else if (type === 'musica') {
+                document.getElementById('modal-content-musica').classList.remove('hidden');
+            } else if (type === 'diario') {
+                document.getElementById('modal-content-diario').classList.remove('hidden');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal-container').classList.add('hidden');
+            if(breathingTimer) clearInterval(breathingTimer);
+        }
+
+        function startBreathingAnimation() {
+            const ball = document.getElementById('breathing-circle');
+            let cycle = 0;
+            if(breathingTimer) clearInterval(breathingTimer);
+            breathingTimer = setInterval(() => {
+                cycle = (cycle + 1) % 3;
+                if(cycle === 0) {
+                    ball.innerText = "Inhala";
+                    ball.style.transform = "scale(1.2)";
+                } else if(cycle === 1) {
+                    ball.innerText = "Retén";
+                    ball.style.transform = "scale(1.1)";
+                } else {
+                    ball.innerText = "Exhala";
+                    ball.style.transform = "scale(0.85)";
+                }
+            }, 3000);
+        }
+
+        function completeActivity(reward, title) {
+            updateCoins(reward, title);
+            triggerNotification(`¡Actividad de Autorregulación completa! Recibes +${reward} EC.`);
+            closeModal();
+        }
+
+        function saveGratitudeDiary() {
+            const txt = document.getElementById('diario-text').value;
+            if(!txt.trim()) return;
+            updateCoins(15, 'Entrada Diario Gratitud');
+            triggerNotification('¡Reflexión de Gratitud grabada! +15 EC añadidos a tu Ledger.');
+            document.getElementById('diario-text').value = '';
+            closeModal();
+        }
+
+        // --- ECOMMERCE COMPRA DE KITS ---
+        function redeemKit(kitName, price) {
+            if(currentCoins >= price) {
+                updateCoins(-price, `Canje: ${kitName}`);
+                triggerNotification(`🎉 ¡Canje exitoso! El QR de reclamo para el ${kitName} fue enviado a tu correo institucional.`);
+            } else {
+                triggerNotification(`⚠️ Fondos insuficientes. Te faltan ${price - currentCoins} EC para reclamar el kit.`);
+            }
+        }
+
+        // --- SIMULADOR DE CHATBOT DE INTELIGENCIA ARTIFICIAL WOLF AI ---
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if(!msg) return;
+
+            const box = document.getElementById('chat-box');
+            
+            // Mensaje usuario
+            box.innerHTML += `
+                <div class="flex justify-end">
+                    <div class="max-w-[80%] p-3 bg-cyan-500 text-slate-950 font-semibold rounded-2xl rounded-tr-none">
+                        ${msg}
+                    </div>
+                </div>
+            `;
+            input.value = '';
+            box.scrollTop = box.scrollHeight;
+
+            // Procesar respuesta automática de la IA (Reglas NLP simuladas)
+            setTimeout(() => {
+                let reply = "Entiendo perfectamente tu situación. Toda la manada Wolves está aquí para apoyarte. Prueba usar el módulo 'Respira Conmigo'.";
+                const lower = msg.toLowerCase();
+
+                if(lower.includes('estresado') || lower.includes('estrés') || lower.includes('examen')) {
+                    reply = "Lamento mucho que pases por estrés académico. Wolf AI te aconseja pausar un minuto e iniciar el ejercicio auditivo de 432Hz para disipar la saturación.";
+                } else if(lower.includes('triste') || lower.includes('solo') || lower.includes('sola')) {
+                    reply = "No estás solo. Recuerda que la manada se cuida mutuamente. He habilitado un botón en tu monitor de estado para agendar asesoría privada con consejería.";
+                } else if(lower.includes('hola') || lower.includes('buenos dias')) {
+                    reply = "¡Hola, lobo! Qué alegría saludarte. Estoy listo para ayudarte a gestionar tus emociones y auditar tu billetera de recompensas.";
+                }
+
+                box.innerHTML += `
+                    <div class="flex justify-start">
+                        <div class="max-w-[80%] p-3 bg-slate-950 border border-slate-800 text-slate-300 rounded-2xl rounded-tl-none">
+                            ${reply}
+                        </div>
+                    </div>
+                `;
+                box.scrollTop = box.scrollHeight;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
